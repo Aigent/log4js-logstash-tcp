@@ -1,17 +1,35 @@
 {
     "name": "log4js-logstash",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "author": "Gembly Games B.V.",
     "description": "A simple log appender for log4js thats sends the data to logstash",
+    "keywords": [
+        "logstash",
+        "log4js",
+        "appender"
+    ],
     "contributors" : [
         {"name": "Ale Bles", "email": "a.bles@keesing.com"}
+    ],
+    "licenses": [
+        {
+            "type": "GNUv2",
+            "url": "https://raw.github.com/gembly/LimitlessGEM/master/LICENSE"
+        }
     ],
     "repository": {
         "type": "git",
         "url": "https://github.com/gembly/log4js-logstash.git"
     },
+    "devDependencies": {
+        "nodeunit": "0.x.x"
+    },
+    "scripts": {
+        "test": "nodeunit tests"
+    },
     "engines": {
-        "node": "0.10.23"
+        "node": "0.10.x"
     },
     "main": "./index.js"
 }
+

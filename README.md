@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/gembly/log4js-logstash.png)](http://travis-ci.org/gembly/log4js-logstash)
+
 log4js-logstash
 ===============
 
@@ -10,6 +12,7 @@ You can install install log4js-logstash by adding this .git url to your package.
 
 Usage: log4js configuration
 ---------------------------
+Plain javascript
 ```javascript
     var log4js = require('log4js');
     log4js.configure({
@@ -19,9 +22,11 @@ Usage: log4js configuration
                 "type": "log4js-logstash",
                 "host": "localhost",
                 "port": 5959,
-                "instance": "MyAwsInstance",
-                "source": "myApp",
-                "environment": "development"
+                "fields": {
+                    "instance": "MyAwsInstance",
+                    "source": "myApp",
+                    "environment": "development"
+                }
             },
             {
                 "category": "tests",
@@ -37,4 +42,37 @@ Usage: log4js configuration
 
     log.error('hello hello');
 ```
+
+Or in YAML
+```yaml
+appenders:
+  [
+    {
+        type: 'console',
+        category:
+          [
+            'WEBSERVER','TEST'
+          ]
+    },
+    {
+        type: 'log4js-logstash',
+        host: 'localhost',
+        port: 5959,
+        fields: {
+            instance: 'MyAwsInstance',
+            source: 'myApp',
+            environment: 'development',
+        },
+        category:
+          [
+            'WEBSERVER','TEST'
+          ]
+    }
+  ]
+replaceConsole: true
+```
+
+TODO
+----
+# Add UDP support
 

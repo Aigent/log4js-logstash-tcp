@@ -1,12 +1,9 @@
 "use strict";
-
 var net = require('net');
 
 var port = 9200,
     host = 'localhost',
-    instance = 'myAWSinstance',
-    source = 'myApp',
-    environment = 'dev';
+    fields = {};
 
 function logStashAppender () {
     //Setup the connection to logstash
@@ -22,12 +19,12 @@ function logStashAppender () {
         var data = {};
         data['@timestamp'] = (new Date()).toISOString();
         data['@fields'] = {
-            instance: instance,
             level: loggingEvent.level.levelStr,
-            source: source,
-            environment: environment,
             category: loggingEvent.categoryName
         };
+        for (var key in fields) {
+            data['@fields'][key] = fields[key];
+        }
         data['@message'] = loggingEvent.data[0];
         pushToStash(host, port, JSON.stringify(data));
     };
@@ -36,10 +33,14 @@ function logStashAppender () {
 function configure(config) {
     port = (config.port !== undefined) ? config.port : port;
     host = (config.host !== undefined) ? config.host : host;
-    instance = (config.instance !== undefined) ? config.instance : instance;
-    source = (config.source !== undefined) ? config.source : source;
-    environment = (config.environment !== undefined) ? config.environment : environment
-    ;
+
+    if (config.fields && typeof config.fields === 'object') {
+        for (var key in config.fields) {
+            if(typeof config.fields[key] !== 'function') {
+                fields[key] = config.fields[key];
+            }
+        }
+    }
     return logStashAppender();
 }
 
