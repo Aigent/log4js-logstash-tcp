@@ -3,7 +3,12 @@ var net = require('net');
 
 var port = 9200,
     host = 'localhost',
-    fields = {};
+    fields = {},
+    batch = 200,
+    timeout = 10,
+    time = process.hrtime(),
+    messages = [],
+    timeOutId = 0;
 
 function logStashAppender () {
     //Setup the connection to logstash
@@ -13,7 +18,7 @@ function logStashAppender () {
             client.end();
         });
         //Fail silently
-        client.on('error', function () {});
+        client.on('error', function (evt) {console.log(evt);});
     }
 
     return function (loggingEvent) {
@@ -28,7 +33,19 @@ function logStashAppender () {
             data['@fields'][key] = fields[key];
         }
         data['@message'] = loggingEvent.data[0];
-        pushToStash(host, port, JSON.stringify(data));
+        messages.push(JSON.stringify(data));
+        clearTimeout(timeOutId);
+        if((process.hrtime(time)[0] >= 10 || messages.length > batch)) {
+            pushToStash(host, port, messages.join('\n'));
+            time = process.hrtime();
+            messages = [];
+        } else {
+            timeOutId = setTimeout(function () {
+                pushToStash(host, port, messages.join('\n'));
+                time = process.hrtime();
+                messages = [];
+            }, 1000);
+        }
     };
 }
 

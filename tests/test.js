@@ -16,38 +16,38 @@ module.exports = {
                 "environment": "development"
             }
         };
-        this.connection = null;
+
         this.testServer = net.createServer();
-        this.testServer.listen(this.config.port, function () {
+        this.testServer.on('listening', function () {
             callback();
         });
+        this.testServer.listen(this.config.port, this.config.host);
     },
     tearDown: function (callback) {
         "use strict";
-        callback();
+        var self = this;
+        this.testServer.on('close', function () {
+            callback();
+        });
+        this.testServer.close();
     },
     'Check basic usage': function (test) {
         "use strict";
         test.expect(2);
         var self = this,
-            log,
-            logEvent;
+            message = 'Im awesome',
+            log;
 
         test.doesNotThrow(function () {
             log = log4jsAppender.configure(self.config);
         }, 'Error', 'Configure shouldn\'t throw an error');
 
-        var message = 'Im awesome';
-
         this.testServer.on('connection', function (con) {
             con.on('data', function (data) {
                 test.strictEqual(JSON.parse(data.toString())['@message'], message, 'data should be message!');
-                self.testServer.close();
                 test.done();
             });
         });
-
-        logEvent = { level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] };
-        log(logEvent);
+        log({ level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] });
     }
 };
