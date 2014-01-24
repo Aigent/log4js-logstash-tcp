@@ -12,6 +12,8 @@ function logStashAppender () {
             client.write(msg);
             client.end();
         });
+        //Fail silently
+        client.on('error', function () {});
     }
 
     return function (loggingEvent) {
