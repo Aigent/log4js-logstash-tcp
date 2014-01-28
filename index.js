@@ -51,7 +51,11 @@ function logStashAppender(config, fields, layout) {
             client.end();
         });
         //Fail silently
-        client.on('error', function () {});
+        client.on('error', function (evt) {
+            if (true === config.debug) {
+                console.log('An error happend in the lostash appender!', evt);
+            }
+        });
     }
 
     return function (logEvt) {
@@ -90,7 +94,8 @@ function configure(config) {
         fields = {},
         options = {
             port: (typeof config.port === "number") ? config.port : 5959,
-            host: (typeof config.host === "string") ? config.host : 'localhost'
+            host: (typeof config.host === "string") ? config.host : 'localhost',
+            debug: config.debug || false
         };
 
     if (config.batch) {
