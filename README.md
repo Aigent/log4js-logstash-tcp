@@ -10,6 +10,11 @@ Installation
 
 You can install install log4js-logstash by adding this .git url to your package.json
 
+Usage: logstash configuration
+-----------------------------
+
+mr abitbol will fill this for us
+
 Usage: log4js configuration
 ---------------------------
 Plain javascript
@@ -58,6 +63,10 @@ appenders:
         type: 'log4js-logstash',
         host: 'localhost',
         port: 5959,
+        batch: {
+            size: 200,
+            timeout: 10
+        },
         fields: {
             instance: 'MyAwsInstance',
             source: 'myApp',
@@ -72,7 +81,4 @@ appenders:
 replaceConsole: true
 ```
 
-TODO
-----
-# Add UDP support
 

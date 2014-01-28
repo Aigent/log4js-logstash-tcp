@@ -1,6 +1,6 @@
 {
     "name": "log4js-logstash",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "author": "Gembly Games B.V.",
     "description": "A simple log appender for log4js thats sends the data to logstash",
     "keywords": [
