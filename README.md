@@ -1,13 +1,11 @@
-[![Build Status](https://secure.travis-ci.org/gembly/log4js-logstash.png)](http://travis-ci.org/gembly/log4js-logstash)
-
 log4js-logstash
 ===============
+[![Build Status](https://secure.travis-ci.org/gembly/log4js-logstash.png)](http://travis-ci.org/gembly/log4js-logstash)
 
 This is a very simple log4js appender that can talk to logstash instances. This version is still very specific to Gembly Games B.V. but feel free to fork and adjust =)
 
 Installation
 ------------
-
 You can install install log4js-logstash by adding this .git url to your package.json
 
 Usage: logstash configuration
