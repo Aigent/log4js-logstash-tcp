@@ -1,15 +1,13 @@
 "use strict";
 var net = require('net');
 
-var fields = {};
-
 /**
  * Simple layout parser for logstash message
  *
  * @param logEvt
  * @returns {{@timestamp: string, @fields: {category: (categoryName|*), level: (levelStr|*)}}}
  */
-function logstashLayout(logEvt) {
+function logstashLayout(logEvt, fields) {
     var key,
         message = {
             '@timestamp': (new Date()).toISOString(),
@@ -26,7 +24,7 @@ function logstashLayout(logEvt) {
         }
     }
 
-    return message;
+    return JSON.stringify(message) + '\n';
 }
 
 /**
@@ -58,24 +56,24 @@ function logStashAppender(config, fields, layout) {
 
     return function (logEvt) {
         //do stuff with the logging event
-        var data = layout(logEvt);
+        var data = layout(logEvt, fields);
 
         if (config.batch === true) {
-            messages.push(JSON.stringify(data));
+            messages.push(data);
             clearTimeout(timeOutId);
             if ((process.hrtime(time)[0] >= config.batchTimeout || messages.length > config.batchSize)) {
-                pushToStash(config, messages.join('\n') + '\n');
+                pushToStash(config, messages.join());
                 time = process.hrtime();
                 messages = [];
             } else {
                 timeOutId = setTimeout(function () {
-                    pushToStash(config, messages.join('\n') + '\n');
+                    pushToStash(config, messages.join());
                     time = process.hrtime();
                     messages = [];
                 }, 1000);
             }
         } else {
-            pushToStash(config, JSON.stringify(data) + '\n');
+            pushToStash(config, data);
         }
     };
 }
@@ -87,10 +85,12 @@ function logStashAppender(config, fields, layout) {
  * @returns {Function}
  */
 function configure(config) {
-    var key, layout = null,
+    var key,
+        layout = null,
+        fields = {},
         options = {
             port: (typeof config.port === "number") ? config.port : 5959,
-            host: (typeof config.host !== "string") ? config.host : 'localhost'
+            host: (typeof config.host === "string") ? config.host : 'localhost'
         };
 
     if (config.batch) {
