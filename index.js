@@ -16,7 +16,8 @@ function logstashLayout(logEvt) {
             '@fields': {
                 category: logEvt.categoryName,
                 level: logEvt.level.levelStr
-            }
+            },
+            '@message': logEvt.data[0]
         };
 
     for (key in fields) {
