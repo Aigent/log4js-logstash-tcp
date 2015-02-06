@@ -53,7 +53,7 @@ function logStashAppender(config, fields, layout) {
         //Fail silently
         client.on('error', function (evt) {
             if (true === config.debug) {
-                console.log('An error happend in the lostash appender!', evt);
+                console.log('An error happened in the logstash appender!', evt);
             }
         });
     }
