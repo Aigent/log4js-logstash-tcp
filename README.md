@@ -11,14 +11,15 @@ You can install install log4js-logstash by adding this .git url to your package.
 Usage: logstash configuration
 -----------------------------
 In the "input" part of the logstash server conf :
-
-    tcp {
-        'codec' => 'json_lines'
-        'data_timeout' => '10'
-        'port' => '5959'
-        'type' => 'tcp-input'
+    
+    input {
+    	tcp {
+    		codec => "json"
+    		data_timeout => 10
+    		port => 5959
+    		type => "tcp-input"
+    	}
     }
-
 
 
 Usage: log4js configuration
