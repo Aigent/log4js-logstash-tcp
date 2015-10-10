@@ -49,5 +49,25 @@ module.exports = {
             });
         });
         log({ level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] });
+    },
+    'When log message is an object, it gets converted to a string': function (test) {
+        "use strict";
+        var self = this,
+            message = { error: true, errorMessage: "something happened"},
+            log;
+
+        test.doesNotThrow(function () {
+            log = log4jsAppender.configure(self.config);
+        }, 'Error', 'Configure shouldn\'t throw an error');
+
+        this.testServer.on('connection', function (con) {
+            con.on('data', function (data) {
+                test.strictEqual(JSON.parse(data.toString())['@message'],
+                    '{"error":true,"errorMessage":"something happened"}', 
+                    'data should be message!');
+                test.done();
+            });
+        });
+        log({ level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] });
     }
 };
