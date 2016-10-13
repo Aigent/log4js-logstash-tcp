@@ -73,12 +73,12 @@ function logStashAppender(config, fields, layout) {
             messages.push(data);
             clearTimeout(timeOutId);
             if ((process.hrtime(time)[0] >= config.batchTimeout || messages.length > config.batchSize)) {
-                pushToStash(config, messages.join());
+                pushToStash(config, messages.join(''));
                 time = process.hrtime();
                 messages = [];
             } else {
                 timeOutId = setTimeout(function () {
-                    pushToStash(config, messages.join());
+                    pushToStash(config, messages.join(''));
                     time = process.hrtime();
                     messages = [];
                 }, 1000);
