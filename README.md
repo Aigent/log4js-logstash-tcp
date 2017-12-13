@@ -1,6 +1,6 @@
 log4js-logstashTCP
 ===============
-[![Build Status](https://secure.travis-ci.org/gembly/log4js-logstash.png)](http://travis-ci.org/gembly/log4js-logstash)
+[![Build Status](https://travis-ci.org/Aigent/log4s-logstashTCP.svg?branch=master)](https://travis-ci.org/Aigent/log4s-logstashTCP)
 
 This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender
 
