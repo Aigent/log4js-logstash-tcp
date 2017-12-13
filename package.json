@@ -1,5 +1,5 @@
 {
-    "name": "log4js-logstashTCP",
+    "name": "log4js-logstash-tcp",
     "version": "1.0.0",
     "author": "Aigent B.V.",
     "description": "This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender.",
@@ -17,12 +17,12 @@
     "licenses": [
         {
             "type": "GNUv2",
-            "url": "https://raw.github.com/gembly/LimitlessGEM/master/LICENSE"
+            "url": "https://github.com/Aigent/log4s-logstashTCP/blob/master/LICENSE"
         }
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/gembly/log4js-logstash.git"
+        "url": "https://github.com/Aigent/log4s-logstash-tcp.git"
     },
     "devDependencies": {
         "log4js": "^2.4.1",

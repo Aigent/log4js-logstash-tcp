@@ -1,12 +1,12 @@
-log4js-logstashTCP
+log4js-logstash-tcp
 ===============
-[![Build Status](https://travis-ci.org/Aigent/log4s-logstashTCP.svg?branch=master)](https://travis-ci.org/Aigent/log4s-logstashTCP)
+[![Build Status](https://travis-ci.org/Aigent/log4s-logstash-tcp.svg?branch=master)](https://travis-ci.org/Aigent/log4s-logstash-tcp)
 
 This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender
 
 Installation
 ------------
-You can install install log4js-logstashTCP by adding this .git url to your package.json or do a npm install log4js-logstashTCP
+You can install install log4js-logstash-tcp by adding this .git url to your package.json or do a npm install log4js-logstash-tcp
 
 Usage: logstash configuration
 -----------------------------
@@ -30,7 +30,7 @@ Plain javascript
         "appenders": [
             {
                 "category": "TEST",
-                "type": "log4js-logstashTCP",
+                "type": "log4js-logstash-tcp",
                 "host": "localhost",
                 "port": 5050,
                 "fields": {
