@@ -1,12 +1,12 @@
-log4js-logstash
+log4js-logstashTCP
 ===============
 [![Build Status](https://secure.travis-ci.org/gembly/log4js-logstash.png)](http://travis-ci.org/gembly/log4js-logstash)
 
-This is a very simple log4js appender that can talk to logstash instances. This version is still very specific to Gembly Games B.V. but feel free to fork and adjust =)
+This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender
 
 Installation
 ------------
-You can install install log4js-logstash by adding this .git url to your package.json
+You can install install log4js-logstashTCP by adding this .git url to your package.json or do a npm install log4js-logstashTCP
 
 Usage: logstash configuration
 -----------------------------
@@ -15,8 +15,7 @@ In the "input" part of the logstash server conf :
     input {
     	tcp {
     		codec => "json"
-    		data_timeout => 10
-    		port => 5959
+    		port => 5050
     		type => "tcp-input"
     	}
     }
@@ -31,9 +30,9 @@ Plain javascript
         "appenders": [
             {
                 "category": "TEST",
-                "type": "log4js-logstash",
+                "type": "log4js-logstashTCP",
                 "host": "localhost",
-                "port": 5959,
+                "port": 5050,
                 "fields": {
                     "instance": "MyAwsInstance",
                     "source": "myApp",
@@ -53,39 +52,6 @@ Plain javascript
     var log = log4js.getLogger('tests');
 
     log.error('hello hello');
-```
-
-Or in YAML
-```yaml
-appenders:
-  [
-    {
-        type: 'console',
-        category:
-          [
-            'WEBSERVER','TEST'
-          ]
-    },
-    {
-        type: 'log4js-logstash',
-        host: 'localhost',
-        port: 5959,
-        batch: {
-            size: 200,
-            timeout: 10
-        },
-        fields: {
-            instance: 'MyAwsInstance',
-            source: 'myApp',
-            environment: 'development',
-        },
-        category:
-          [
-            'WEBSERVER','TEST'
-          ]
-    }
-  ]
-replaceConsole: true
 ```
 
 

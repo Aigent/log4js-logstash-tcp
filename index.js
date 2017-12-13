@@ -1,125 +1,111 @@
-"use strict";
-var net = require('net');
+'use strict';
 
-// Function to identify type of an object. 
-// Source: https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/ 
-var toType = function(obj) {
-  return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+const net = require('net');
+const util = require('util');
+
+function sendLog(host, port, logObject) {
+    const msg = JSON.stringify(logObject) + "\n";
+    const tcp = net.connect({host: host, port: port}, function () {
+        tcp.write(msg);
+        tcp.end();
+    });
+
+    tcp.on('error', function (evt) {
+        console.error('An error happened while sending log line to logstash', evt);
+    });
 }
 
-/**
- * Simple layout parser for logstash message.
- * If message type is not string, parser will convert message into string using JSON.stringify.
- *
- * @param logEvt, fields
- * @returns {{@timestamp: string, @fields: {category: (categoryName|*), level: (levelStr|*)}}}
- */
-function logstashLayout(logEvt, fields) {
-    var messageData = logEvt.data[0], 
-        log = {
-            '@timestamp': (new Date()).toISOString(),
-            '@fields': {
-                category: logEvt.categoryName,
-                level: logEvt.level.levelStr
-            },
-            '@message' : (toType(messageData) === "string") ? messageData : JSON.stringify(messageData)
-        }
-    
-    for (var key in fields) {
-        if (typeof fields[key] !== 'function') {
-            log['@fields'][key] = fields[key];
-        }
+
+function logstashTCP(config, layout) {
+    const type = config.logType ? config.logType : config.category;
+
+    if (!config.fields) {
+        config.fields = {};
     }
 
-    return JSON.stringify(log) + '\n';
-}
+    function checkArgs(argsValue, logUnderFields) {
+        if ((!argsValue) || (argsValue === 'both')) {
+            return true;
+        }
 
-/**
- * The appender, Gives us the function used for log4js.
- * It Supports batching of commands, we use the json_lines codec for this library,
- * so the \n are mandatory
- *
- * @param config
- * @param fields
- * @param layout
- * @returns {Function}
- */
-function logStashAppender(config, fields, layout) {
-    var time = process.hrtime(),
-        messages = [],
-        timeOutId = 0;
+        if (logUnderFields && (argsValue === 'fields')) {
+            return true;
+        }
 
-    layout = layout || logstashLayout;
+        if ((!logUnderFields) && (argsValue === 'direct')) {
+            return true;
+        }
 
-    //Setup the connection to logstash
-    function pushToStash(config, msg) {
-        var client = net.connect({host: config.host, port: config.port}, function () {
-            client.write(msg);
-            client.end();
-        });
-        //Fail silently
-        client.on('error', function (evt) {
-            if (true === config.debug) {
-                console.log('An error happened in the logstash appender!', evt);
-            }
-        });
+        return false;
     }
 
-    return function (logEvt) {
-        //do stuff with the logging event
-        var data = layout(logEvt, fields);
+    function log(loggingEvent) {
+        /*
+         https://gist.github.com/jordansissel/2996677
+         {
+         'message'    => 'hello world',
+         '@version'   => '1',
+         '@timestamp' => '2014-04-22T23:03:14.111Z',
+         'type'       => 'stdin',
+         'host'       => 'hello.local'
+         }
+         @timestamp is the ISO8601 high-precision timestamp for the event.
+         @version is the version number of this json schema
+         Every other field is valid and fine.
+         */
 
-        if (config.batch === true) {
-            messages.push(data);
-            clearTimeout(timeOutId);
-            if ((process.hrtime(time)[0] >= config.batchTimeout || messages.length > config.batchSize)) {
-                pushToStash(config, messages.join(''));
-                time = process.hrtime();
-                messages = [];
-            } else {
-                timeOutId = setTimeout(function () {
-                    pushToStash(config, messages.join(''));
-                    time = process.hrtime();
-                    messages = [];
-                }, 1000);
+        const fields = {};
+        Object.keys(config.fields).forEach((key) => {
+            fields[key] = typeof config.fields[key] === 'function' ? config.fields[key](loggingEvent) : config.fields[key];
+        });
+
+        /* eslint no-prototype-builtins:1,no-restricted-syntax:[1, "ForInStatement"] */
+        if (loggingEvent.data.length > 1) {
+            const secondEvData = loggingEvent.data[1];
+            if ((secondEvData !== undefined) && (secondEvData !== null)) {
+                Object.keys(secondEvData).forEach((key) => {
+                    fields[key] = secondEvData[key];
+                })
+                ;
             }
-        } else {
-            pushToStash(config, data);
         }
-    };
-}
+        fields.level = loggingEvent.level.levelStr;
+        fields.category = loggingEvent.categoryName;
 
-/**
- * Config method, calls logStashAppender to return the logging function
- *
- * @param config
- * @returns {Function}
- */
-function configure(config) {
-    var key,
-        layout = null,
-        fields = {},
-        options = {
-            port: (typeof config.port === "number") ? config.port : 5959,
-            host: (typeof config.host === "string") ? config.host : 'localhost',
-            debug: config.debug || false
+        const logObject = {
+            '@version': '1',
+            '@timestamp': (new Date(loggingEvent.startTime)).toISOString(),
+            type: type,
+            message: layout(loggingEvent)
         };
 
-    if (config.batch) {
-        options.batch = true;
-        options.batchSize = config.batch.size;
-        options.batchTimeout = config.batch.timeout;
+        if (checkArgs(config.args, true)) {
+            logObject.fields = fields;
+        }
+
+        if (checkArgs(config.args, false)) {
+            Object.keys(fields).forEach((key) => {
+                logObject[key] = fields[key];
+            });
+        }
+
+        sendLog(config.host, config.port, logObject);
     }
 
-    if (config.fields && typeof config.fields === 'object') {
-        for (key in config.fields) {
-            if (typeof config.fields[key] !== 'function') {
-                fields[key] = config.fields[key];
-            }
-        }
-    }
-    return logStashAppender(options, fields, layout);
+    log.shutdown = function (cb) {
+        cb();
+    };
+
+    return log;
 }
 
-exports.appender = logStashAppender;
-exports.configure = configure;
+function configure(config, layouts) {
+    let layout = layouts.dummyLayout;
+    if (config.layout) {
+        layout = layouts.layout(config.layout.type, config.layout);
+    }
+
+    return logstashTCP(config, layout);
+}
+
+module.exports.configure = configure;

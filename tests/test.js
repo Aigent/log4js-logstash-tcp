@@ -1,5 +1,6 @@
 var net = require('net'),
-    log4jsAppender = require('../index');
+    log4jsAppender = require('../index.js'),
+    layouts = require('log4js/lib/layouts.js');
 
 module.exports = {
     setUp: function (callback) {
@@ -7,9 +8,9 @@ module.exports = {
         var self = this;
         this.config = {
             "category": "TEST",
-            "type": "log4js-logstash",
+            "type": "log4js-logstashTCP",
             "host": "localhost",
-            "port": 5959,
+            "port": 5050,
             "fields": {
                 "instance": "MyAwsInstance",
                 "source": "myApp",
@@ -39,35 +40,15 @@ module.exports = {
             log;
 
         test.doesNotThrow(function () {
-            log = log4jsAppender.configure(self.config);
+            log = log4jsAppender.configure(self.config, layouts);
         }, 'Error', 'Configure shouldn\'t throw an error');
 
         this.testServer.on('connection', function (con) {
             con.on('data', function (data) {
-                test.strictEqual(JSON.parse(data.toString())['@message'], message, 'data should be message!');
+                test.strictEqual(JSON.parse(data.toString())['message'], message, 'data should be message!');
                 test.done();
             });
         });
-        log({ level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] });
-    },
-    'When log message is an object, it gets converted to a string': function (test) {
-        "use strict";
-        var self = this,
-            message = { error: true, errorMessage: "something happened"},
-            log;
-
-        test.doesNotThrow(function () {
-            log = log4jsAppender.configure(self.config);
-        }, 'Error', 'Configure shouldn\'t throw an error');
-
-        this.testServer.on('connection', function (con) {
-            con.on('data', function (data) {
-                test.strictEqual(JSON.parse(data.toString())['@message'],
-                    '{"error":true,"errorMessage":"something happened"}', 
-                    'data should be message!');
-                test.done();
-            });
-        });
-        log({ level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] });
+        log({ startTime: new Date(), level: {levelStr: 'FOO'}, categoryName: 'BAR', data: [message] });
     }
 };
