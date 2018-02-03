@@ -29,7 +29,7 @@ Plain javascript
     log4js.configure({
         "appenders": [
             {
-                "category": "TEST",
+                "category": "tests",
                 "type": "log4js-logstash-tcp",
                 "host": "localhost",
                 "port": 5050,
