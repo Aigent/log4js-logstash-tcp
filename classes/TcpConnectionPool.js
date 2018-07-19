@@ -18,6 +18,7 @@ class TcpConnectionWrapper extends EventEmitter {
             self.connected = true;
         });
 
+        this.connection.setTimeout(5000);
         this.connection.on("timeout", () => {self.destroy()});
         this.connection.on("close", () => {self.destroy()});
         this.connection.on("error", (err) => {
