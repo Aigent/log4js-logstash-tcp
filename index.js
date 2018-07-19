@@ -6,9 +6,10 @@ const util = require('util');
 function sendLog(host, port, logObject) {
     const msg = JSON.stringify(logObject) + "\n";
     const tcp = net.connect({host: host, port: port}, function () {
-        tcp.write(msg);
-        tcp.end();
-        tcp.destroy();
+        tcp.write(msg, 'utf8', () => {
+            tcp.end();
+            tcp.destroy();
+        });
     });
 
     tcp.on('error', function (evt) {
