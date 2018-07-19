@@ -1,22 +1,14 @@
 'use strict';
 
-const net = require('net');
 const util = require('util');
 
+const TcpConnectionPool = require("./classes/TcpConnectionPool");
+
+const tcpConnectionPool = new TcpConnectionPool();
+
 function sendLog(host, port, logObject) {
-    const msg = JSON.stringify(logObject) + "\n";
-    const tcp = net.connect({host: host, port: port}, function () {
-        tcp.write(msg, 'utf8', () => {
-            tcp.end();
-            tcp.destroy();
-        });
-    });
-
-    tcp.on('error', function (evt) {
-        console.error('An error happened while sending log line to logstash', evt);
-    });
+    tcpConnectionPool.send(host, port, logObject);
 }
-
 
 function logstashTCP(config, layout) {
     const type = config.logType ? config.logType : config.category;
