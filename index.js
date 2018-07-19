@@ -8,7 +8,7 @@ function sendLog(host, port, logObject) {
     const tcp = net.connect({host: host, port: port}, function () {
         tcp.write(msg);
         tcp.end();
-        tcp.close();
+        tcp.destroy();
     });
 
     tcp.on('error', function (evt) {
