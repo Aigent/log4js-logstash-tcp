@@ -2,7 +2,7 @@
 
 const util = require('util');
 
-const TcpConnectionPool = require("./classes/TcpConnectionPool");
+const TcpConnectionPool = require("./classes/TcpConnectionPool").TcpConnectionPool;
 
 const tcpConnectionPool = new TcpConnectionPool();
 
