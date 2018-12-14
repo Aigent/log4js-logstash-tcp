@@ -1,6 +1,7 @@
 log4js-logstash-tcp
 ===============
 [![Build Status](https://travis-ci.org/Aigent/log4js-logstash-tcp.svg?branch=master)](https://travis-ci.org/Aigent/log4js-logstash-tcp)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FAigent%2Flog4js-logstash-tcp.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FAigent%2Flog4js-logstash-tcp?ref=badge_shield)
 
 This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender
 
@@ -55,3 +56,7 @@ Plain javascript
 ```
 
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FAigent%2Flog4js-logstash-tcp.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FAigent%2Flog4js-logstash-tcp?ref=badge_large)
