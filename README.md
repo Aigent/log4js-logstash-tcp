@@ -7,7 +7,7 @@ This is a copy of the logstashUDP appender but instead sending via UDP send via 
 
 Installation
 ------------
-You can install install log4js-logstash-tcp by adding this .git url to your package.json or do a npm install log4js-logstash-tcp
+You can install log4js-logstash-tcp by adding this .git url to your package.json or do a `npm install log4js-logstash-tcp`
 
 Usage: logstash configuration
 -----------------------------

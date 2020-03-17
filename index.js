@@ -47,7 +47,6 @@ function logstashTCP(config, layout) {
          @version is the version number of this json schema
          Every other field is valid and fine.
          */
-
         const fields = {};
         Object.keys(config.fields).forEach((key) => {
             fields[key] = typeof config.fields[key] === 'function' ? config.fields[key](loggingEvent) : config.fields[key];
@@ -70,19 +69,14 @@ function logstashTCP(config, layout) {
             '@version': '1',
             '@timestamp': (new Date(loggingEvent.startTime)).toISOString(),
             type: type,
-            message: layout(loggingEvent)
+            message: loggingEvent.data[0]
         };
-
-        if (checkArgs(config.args, true)) {
-            logObject.fields = fields;
-        }
 
         if (checkArgs(config.args, false)) {
             Object.keys(fields).forEach((key) => {
                 logObject[key] = fields[key];
             });
         }
-
         sendLog(config.host, config.port, logObject);
     }
 
