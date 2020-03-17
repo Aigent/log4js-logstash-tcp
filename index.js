@@ -69,7 +69,7 @@ function logstashTCP(config, layout) {
             '@version': '1',
             '@timestamp': (new Date(loggingEvent.startTime)).toISOString(),
             type: type,
-            message: loggingEvent.data[0]
+            message: layout(loggingEvent)//.data[0]
         };
 
         if (checkArgs(config.args, false)) {
@@ -92,7 +92,9 @@ function configure(config, layouts) {
     if (config.layout) {
         layout = layouts.layout(config.layout.type, config.layout);
     }
-
+    if(!layout) {
+        throw new Error('wrong and/or unknown layout chosen in log4js configuration', config.layout);
+    }
     return logstashTCP(config, layout);
 }
 

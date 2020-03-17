@@ -46,7 +46,10 @@ class TcpConnectionWrapper extends EventEmitter {
         if(this.connected === true) {
             this.connection.write(message)
         } else {
-            setTimeout(() => {self.realSend(message);}, this.connectionNotReadyRetryInterval);
+            const timeout = setTimeout(() => {
+                self.realSend(message);
+                clearTimeout(timeout);
+            }, this.connectionNotReadyRetryInterval);
         }
 
     }
