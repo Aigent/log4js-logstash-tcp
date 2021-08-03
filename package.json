@@ -1,6 +1,6 @@
 {
     "name": "log4js-logstash-tcp",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "author": "Aigent B.V.",
     "description": "This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender.",
     "keywords": [
