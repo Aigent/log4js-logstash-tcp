@@ -6,6 +6,14 @@ const TcpConnectionPool = require("./classes/TcpConnectionPool").TcpConnectionPo
 
 const tcpConnectionPool = new TcpConnectionPool();
 
+let apm = false;
+try {
+    apm = require('elastic-apm-node');
+} catch(e) {
+    // ignore APM if it's not loaded
+}
+
+
 function sendLog(host, port, logObject) {
     tcpConnectionPool.send(host, port, logObject);
 }
@@ -35,12 +43,10 @@ function logstashTCP(config, layout) {
 
     function log(loggingEvent) {
         let currentAPMTransaction = false
-        try {
-            const apm = require('elastic-apm-node');
+        if(apm && apm.currentTransaction) {
             currentAPMTransaction = apm.currentTransaction
-        } catch(e) {
-            // ignore APM if it's not loaded
         }
+
         /*
          https://gist.github.com/jordansissel/2996677
          {
