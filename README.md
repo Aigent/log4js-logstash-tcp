@@ -51,6 +51,8 @@ Plain javascript
     });
 
     var log = log4js.getLogger('tests');
+    // adding context and add it as additional field to each log entry
+    log.addContext('customer', {id: 123, name: 'John Doe'});
 
     log.error('hello hello');
 ```

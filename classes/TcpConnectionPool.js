@@ -100,7 +100,11 @@ class TcpConnectionPool {
     _createIndexForTcpConnection() {
         return Math.floor( Math.random() * this.config.maxTcpConnections) % this.config.maxTcpConnections;
     }
-
+    close() {
+        for(let key in this.tcpConnections) {
+            this.tcpConnections[key].destroy();
+        }
+    }
 }
 
 module.exports.TcpConnectionPool = TcpConnectionPool;
