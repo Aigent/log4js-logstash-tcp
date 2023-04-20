@@ -54,9 +54,14 @@ class TcpConnectionWrapper extends EventEmitter {
 
     }
 
-    destroy() {
-        this.connection.end();
-        this.connection.destroy();
+    destroy(cb) {
+        const self = this;
+        this.connection.end(() => {
+            self.connection.destroy();
+            if (typeof cb === "function") {
+                cb();
+            }
+        });
 
         this.emit("destroy");
     }
@@ -101,6 +106,24 @@ class TcpConnectionPool {
         return Math.floor( Math.random() * this.config.maxTcpConnections) % this.config.maxTcpConnections;
     }
 
+    close(cb) {
+        const connections = [];
+        Object.keys(this.tcpConnections).forEach((index) => {
+            connections.push(this.tcpConnections[index]);
+        });
+
+        let completed = 0;
+        const complete = () => {
+            if (++completed >= connections.length) {
+                if (typeof cb === "function") {
+                    cb();
+                }
+            }
+        };
+        for (const tcpConnectionWrapper of connections) {
+            tcpConnectionWrapper.destroy(complete);
+        }
+    }
 }
 
 module.exports.TcpConnectionPool = TcpConnectionPool;

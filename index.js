@@ -96,7 +96,7 @@ function logstashTCP(config, layout) {
     }
 
     log.shutdown = function (cb) {
-        cb();
+        tcpConnectionPool.close(cb);
     };
 
     return log;
