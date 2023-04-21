@@ -1,7 +1,7 @@
 {
     "name": "log4js-logstash-tcp",
-    "version": "2.0.3",
-    "author": "Aigent B.V.",
+    "version": "2.0.5",
+    "author": "Sebastian Lagemann <sebastian@slab.rocks> (https://slab.rocks)",
     "description": "This is a copy of the logstashUDP appender but instead sending via UDP send via TCP to avoid the maximum 64k bytes message size with the logstashUDP appender.",
     "keywords": [
         "logstash",
@@ -12,6 +12,15 @@
         {
             "name": "Sebastian Lagemann",
             "email": "sebastian@aigent.com"
+        },
+        {
+            "name": "Sebastian Lagemann",
+            "email": "sebastian@slab.rocks",
+            "url": "https://slab.rocks"
+        },
+        {
+            "name": "Lam Wei Li",
+            "url": "https://github.com/lamweili"
         }
     ],
     "licenses": [
@@ -22,17 +31,17 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Aigent/log4js-logstash-tcp.git"
+        "url": "https://github.com/Degola/log4js-logstash-tcp"
     },
     "devDependencies": {
-        "log4js": "^2.4.1",
-        "nodeunit": "^0.11.2"
+        "jest": "^29.5.0",
+        "log4js": "^6.9.1"
     },
     "scripts": {
-        "test": "nodeunit tests"
+        "test": "jest --coverage --detectOpenHandles"
     },
     "engines": {
-        "node": "0.10.x"
+        "node": ">=6.4.0"
     },
     "main": "./index.js"
 }

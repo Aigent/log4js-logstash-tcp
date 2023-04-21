@@ -1,7 +1,5 @@
 'use strict';
 
-const util = require('util');
-
 const TcpConnectionPool = require("./classes/TcpConnectionPool").TcpConnectionPool;
 
 const tcpConnectionPool = new TcpConnectionPool();
@@ -34,11 +32,7 @@ function logstashTCP(config, layout) {
             return true;
         }
 
-        if ((!logUnderFields) && (argsValue === 'direct')) {
-            return true;
-        }
-
-        return false;
+        return (!logUnderFields) && (argsValue === 'direct');
     }
 
     function log(loggingEvent) {
@@ -64,6 +58,18 @@ function logstashTCP(config, layout) {
         Object.keys(config.fields).forEach((key) => {
             fields[key] = typeof config.fields[key] === 'function' ? config.fields[key](loggingEvent) : config.fields[key];
         });
+        // adding context to log messages as separate fields added by logger.addContext(key, value)
+        if(loggingEvent.context) {
+            if(loggingEvent.data.length === 1 || !loggingEvent.data[1]) {
+                loggingEvent.data[1] = {}
+            }
+            if(typeof loggingEvent.data[1] === 'object') {
+                loggingEvent.data[1] = {
+                    ...loggingEvent.context,
+                    ...loggingEvent.data[1]
+                }
+            }
+        }
 
         /* eslint no-prototype-builtins:1,no-restricted-syntax:[1, "ForInStatement"] */
         if (loggingEvent.data.length > 1) {
@@ -96,7 +102,7 @@ function logstashTCP(config, layout) {
     }
 
     log.shutdown = function (cb) {
-        cb();
+        tcpConnectionPool.close(cb);
     };
 
     return log;
